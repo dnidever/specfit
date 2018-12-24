@@ -1,0 +1,24 @@
+SPECFIT Upgrade Ideas
+
+use a spectrum structure for everything in specfit.
+have a program called something like specfit_mkstruct
+that you give spec, wave, errspec, mask, and maybe
+keywords to set what has already been done.
+this should have flags for:
+wavelog, npts, nused, prepared, setres, binsmooth, setres,
+norm, the specpars parameters and other parameters.
+
+then when each program (from specfit_prepspec)
+operates on the structure the appropriate flags should
+be set (prepared=1 if all the preparation tasks have
+been done).  this make things much easier to deal
+with and I won't have to constantly check the wavelength
+array against the specpars.
+
+Change specpars so that you input the number of pixels not w1:
+w0, dw, npix, res
+That way it will be easier to get the wavelength solution right.
+Probably also input it as a structure, also include a "log"
+tag.  Also, res can be an array for wavelength dependent resolution.
+Things should still be double.
+

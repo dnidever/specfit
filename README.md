@@ -6,6 +6,7 @@ generic but does requires fully reducted and wavelength calibrated 1-D spectra w
 
 Here are the inputs, output and usage for the main specfit.pro program:
 
+```
 ; INPUTS:
 ;  wave       The observed wavelength array
 ;  spec       The observed spectrum array
@@ -39,3 +40,4 @@ Here are the inputs, output and usage for the main specfit.pro program:
 ;
 ; USAGE:
 ;  IDL>specfit,wave,spec,errspec,synstr,[4000.,4500.,1.4,2.7],fitstr,dir=specdir
+```

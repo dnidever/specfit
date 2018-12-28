@@ -1,7 +1,7 @@
 pro specfit,wave0,spec0,errspec0,synstr,specpars,fitstr,mask=mask0,$
                  zerovel=zerovel,monte=monte,nmonte=nmonte0,error=error,$
                  stp=stp,plot=pl,silent=silent,fitstr_monte=monte_fitstr,$
-                 fitvsini=fitvsini,fixvsini=fixvsini
+                 fitvsini=fitvsini,fixvsini=fixvsini,psfile=psfile
 
 ;+
 ;
@@ -29,6 +29,7 @@ pro specfit,wave0,spec0,errspec0,synstr,specpars,fitstr,mask=mask0,$
 ;  /monte     Get errors via Monte Carlo simulation.  This takes 50x longer.
 ;  =nmonte    The number of Monte Carlo simulations (minimum is 10).
 ;  /plot      Plot the spectra.
+;  =psfile    EPS filename to save the final plot to.
 ;  /silent    Don't print anything to the screen
 ;  /stp       Stop at the end of the program
 ;
@@ -85,7 +86,8 @@ ndir = n_elements(dir)
 if nwave eq 0 or nspec eq 0 or nerrspec eq 0 or nsynstr eq 0 or nspecpars eq 0 then begin
   print,'Syntax - specfit,wave,spec,errspec,synstr,specpars,fitstr,mask=mask,'
   print,'                      zerovel=zerovel,fitvsini=fitvsini,monte=monte,'
-  print,'                      nmonte=nmonte,fixvsini=fixvsini,plot=plot,error=error,stp=stp'
+  print,'                      nmonte=nmonte,fixvsini=fixvsini,plot=plot,error=error,'
+  print,'                      psfile=psfile,stp=stp'
   error = 'Not enough inputs'
   return
 endif
@@ -359,10 +361,10 @@ if keyword_set(monte) then begin
   ; Make final FITSTR
   if n_elements(mask0) gt 0 then maskinput=1 else maskinput=0
   if keyword_set(zerovel) then fixzero=1 else fixzero=0
-  fitstr = {specpars:specpars,zerovel:fixzero,mask:maskinput,npts:npts,nused:nused,snr:snr,bestpars:bestpars,$
-            parerrors:parerrors,teff:bestpars[0],tefferr:uncteff,logg:bestpars[1],loggerr:unclogg,metal:bestpars[2],$
-            metalerr:uncmetal,alpha:bestpars[3],alphaerr:uncalpha,chisq:chisq,dof:dof,$
-            rchisq:rchisq,vrel:vrel,vrelerr:uncvrel,vsini:vsini,vsinierr:vsinierr}
+  fitstr = {specpars:double(specpars),zerovel:fix(fixzero),mask:fix(maskinput),npts:long(npts),nused:long(nused),snr:double(snr),bestpars:double(bestpars),$
+            parerrors:double(parerrors),teff:double(bestpars[0]),tefferr:double(uncteff),logg:double(bestpars[1]),loggerr:double(unclogg),metal:double(bestpars[2]),$
+            metalerr:double(uncmetal),alpha:double(bestpars[3]),alphaerr:double(uncalpha),chisq:float(chisq),dof:long(dof),$
+            rchisq:float(rchisq),vrel:double(vrel),vrelerr:double(uncvrel),vsini:double(vsini),vsinierr:double(vsinierr)}
 
 ; NO monte carlo errors
 endif else begin
@@ -385,15 +387,15 @@ endif else begin
   ; Make final FITSTR
   if n_elements(mask0) gt 0 then maskinput=1 else maskinput=0
   if keyword_set(zerovel) then fixzero=1 else fixzero=0
-  fitstr = {specpars:specpars,zerovel:fixzero,mask:maskinput,npts:npts,nused:nused,snr:snr,bestpars:bestpars,$
-            teff:bestpars[0],logg:bestpars[1],metal:bestpars[2],alpha:bestpars[3],chisq:chisq,dof:dof,$
-            rchisq:rchisq,vrel:vrel,vrelerr:hyb_fitstr.vrelerr,vsini:vsini}
+  fitstr = {specpars:double(specpars),zerovel:fix(fixzero),mask:fix(maskinput),npts:long(npts),nused:long(nused),snr:double(snr),bestpars:double(bestpars),$
+            teff:double(bestpars[0]),logg:double(bestpars[1]),metal:double(bestpars[2]),alpha:double(bestpars[3]),chisq:float(chisq),dof:long(dof),$
+            rchisq:float(rchisq),vrel:double(vrel),vrelerr:double(hyb_fitstr.vrelerr),vsini:double(vsini),vsinierr:double(vsinierr)}
 
 endelse
 
 
 ; Plot
-if keyword_set(pl) then begin
+if keyword_set(pl) or keyword_set(psfile) then begin
 
   ; Get prepared object spectrum
   SPECFIT_PREPSPEC,wave,spec,errspec0,mask,specpars,wave2,spec2,errspec2,mask2,/object
@@ -401,6 +403,13 @@ if keyword_set(pl) then begin
   SPECFIT_COMPARESYNSPEC,wave2,spec2,synstr,bestpars,specpars,errspec=errspec2,mask=mask2,$
                          zerovel=zerovel,fitvsini=fitvsini,fixvsini=fixvsini,error=error,$
                          /silent,wsynth=wsynth,ssynth=ssynth
+
+  if keyword_set(psfile) then begin
+    setdisp
+    loadct,39,/silent
+    !p.font = 0
+    ps_open,psfile,/color,thick=4,/encap
+  endif
 
   plot,[0],[0],/nodata,xtit='Wavelength (A)',xr=[w0,w1],yr=[-0.15,1.4],xs=1,ys=1
   oplot,wave2,spec2
@@ -450,6 +459,7 @@ if keyword_set(pl) then begin
    xyouts,mean([w0,w1]),0.2,out,align=0.5,charsize=1.2
   endelse
 
+  if keyword_set(psfile) then ps_close
 
 endif
 

@@ -364,7 +364,7 @@ if keyword_set(monte) then begin
   fitstr = {specpars:double(specpars),zerovel:fix(fixzero),mask:fix(maskinput),npts:long(npts),nused:long(nused),snr:double(snr),bestpars:double(bestpars),$
             parerrors:double(parerrors),teff:double(bestpars[0]),tefferr:double(uncteff),logg:double(bestpars[1]),loggerr:double(unclogg),metal:double(bestpars[2]),$
             metalerr:double(uncmetal),alpha:double(bestpars[3]),alphaerr:double(uncalpha),chisq:float(chisq),dof:long(dof),$
-            rchisq:float(rchisq),vrel:double(vrel),vrelerr:double(uncvrel),vsini:double(vsini),vsinierr:double(vsinierr)}
+            rchisq:float(rchisq),vrel:double(vrel),vrelerr:double(uncvrel),vsini:double(vsini),vsinierr:double(0.0)}
 
 ; NO monte carlo errors
 endif else begin
@@ -389,7 +389,7 @@ endif else begin
   if keyword_set(zerovel) then fixzero=1 else fixzero=0
   fitstr = {specpars:double(specpars),zerovel:fix(fixzero),mask:fix(maskinput),npts:long(npts),nused:long(nused),snr:double(snr),bestpars:double(bestpars),$
             teff:double(bestpars[0]),logg:double(bestpars[1]),metal:double(bestpars[2]),alpha:double(bestpars[3]),chisq:float(chisq),dof:long(dof),$
-            rchisq:float(rchisq),vrel:double(vrel),vrelerr:double(hyb_fitstr.vrelerr),vsini:double(vsini),vsinierr:double(vsinierr)}
+            rchisq:float(rchisq),vrel:double(vrel),vrelerr:double(hyb_fitstr.vrelerr),vsini:double(vsini),vsinierr:double(0.0)}
 
 endelse
 
